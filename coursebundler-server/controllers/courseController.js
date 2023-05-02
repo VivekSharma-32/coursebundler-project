@@ -167,7 +167,7 @@ export const deleteLecture = catchAsyncError(async (req, res, next) => {
   });
 });
 
-Course.watch.on("change", async () => {
+Course.watch().on("change", async () => {
   const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
 
   const courses = await Course.find({});

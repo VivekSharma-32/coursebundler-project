@@ -1,5 +1,6 @@
 import express from "express";
 import { config } from "dotenv";
+import cors from "cors";
 import course from "./routes/courseRoutes.js";
 import user from "./routes/userRoutes.js";
 import payment from "./routes/paymentRoutes.js";
@@ -14,6 +15,7 @@ config({
 const app = express();
 
 // Using Middlewares
+app.use(cors());
 app.use(express.json());
 app.use(
   express.urlencoded({
