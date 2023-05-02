@@ -7,6 +7,9 @@ import cloudinary from "cloudinary";
 
 // get all courses
 export const getAllCourses = catchAsyncError(async (req, res, next) => {
+  const keyword = req.query.keyword || "";
+  const category = req.query.category || "";
+
   const courses = await Course.find({
     title: {
       $regex: keyword,
