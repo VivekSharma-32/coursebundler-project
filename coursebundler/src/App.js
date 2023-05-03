@@ -34,12 +34,11 @@ function App() {
     e.preventDefault();
   });
 
-  const dispatch = useDispatch();
-
   const { isAuthenticated, user, message, error, loading } = useSelector(
     state => state.user
   );
 
+  const dispatch = useDispatch();
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -81,7 +80,7 @@ function App() {
             <Route
               path="/changepassword"
               element={
-                <ProtectedRoute isAuthenticated={!isAuthenticated}>
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
                   <ChangePassword />
                 </ProtectedRoute>
               }
@@ -89,8 +88,8 @@ function App() {
             <Route
               path="/updateprofile"
               element={
-                <ProtectedRoute isAuthenticated={!isAuthenticated}>
-                  <UpdateProfile />
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <UpdateProfile user={user} />
                 </ProtectedRoute>
               }
             />
@@ -116,14 +115,34 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/forgetpassword" element={<ForgetPassword />} />
-            <Route path="/resetpassword/:token" element={<ResetPassword />} />
+            <Route
+              path="/forgetpassword"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={!isAuthenticated}
+                  redirect={'/profile'}
+                >
+                  <ForgetPassword />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/resetpassword/:token"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={!isAuthenticated}
+                  redirect={'/profile'}
+                >
+                  <ResetPassword />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/subscribe"
               element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
-                  <Subscribe />
+                  <Subscribe user={user} />
                 </ProtectedRoute>
               }
             />

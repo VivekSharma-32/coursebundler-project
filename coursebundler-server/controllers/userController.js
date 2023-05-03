@@ -81,22 +81,21 @@ export const getMyProfile = catchAsyncError(async (req, res, next) => {
 
 export const changePassword = catchAsyncError(async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
-
   if (!oldPassword || !newPassword)
-    return next(new ErrorHandler("Please enter all fields", 400));
+    return next(new ErrorHandler("Please enter all field", 400));
 
   const user = await User.findById(req.user._id).select("+password");
 
-  const isMatch = await user.comparePassword(password);
+  const isMatch = await user.comparePassword(oldPassword);
 
-  if (!isMatch) return next(new ErrorHandler("Incorrect old password", 400));
+  if (!isMatch) return next(new ErrorHandler("Incorrect Old Password", 400));
 
   user.password = newPassword;
+
   await user.save();
 
   res.status(200).json({
     success: true,
-
     message: "Password Changed Successfully",
   });
 });
@@ -318,9 +317,9 @@ User.watch().on("change", async () => {
   const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
 
   const subscription = await User.find({ "subscription.status": "active" });
-
   stats[0].users = await User.countDocuments();
   stats[0].subscription = subscription.length;
   stats[0].createdAt = new Date(Date.now());
+
   await stats[0].save();
 });

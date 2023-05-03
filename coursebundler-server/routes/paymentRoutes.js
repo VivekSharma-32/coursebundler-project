@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 // Buy Subscription
-router.route("/subscribe").post(isAuthenticated, buySubscription);
+router.route("/subscribe").get(isAuthenticated, buySubscription);
 
 // payment verification and save reference in db
 router.route("/paymentverification").post(isAuthenticated, paymentVerification);
