@@ -1,16 +1,16 @@
 import React from 'react';
 import {
-  Heading,
-  Stack,
-  VStack,
-  Text,
-  Button,
-  Image,
   Box,
+  Button,
+  Heading,
   HStack,
+  Image,
+  Stack,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
+import './home.css';
 import { Link } from 'react-router-dom';
-import './Home.css';
 import vg from '../../assets/images/bg.png';
 import { CgGoogle, CgYoutube } from 'react-icons/cg';
 import { SiCoursera, SiUdemy } from 'react-icons/si';
@@ -23,21 +23,21 @@ const Home = () => {
       <div className="container">
         <Stack
           direction={['column', 'row']}
-          height={'100%'}
+          height="100%"
           justifyContent={['center', 'space-between']}
-          alignItems={'center'}
+          alignItems="center"
           spacing={['16', '56']}
         >
           <VStack
             width={'full'}
             alignItems={['center', 'flex-end']}
-            spacing={'8'}
+            spacing="8"
           >
             <Heading children="LEARN FROM THE EXPERTS" size={'2xl'} />
             <Text
-              textAlign={['center', 'left']}
               fontSize={'2xl'}
-              fontFamily={'cursive'}
+              fontFamily="cursive"
+              textAlign={['center', 'left']}
               children="Find Valuable Content At Reasonable Price"
             />
             <Link to="/courses">
@@ -51,22 +51,22 @@ const Home = () => {
             className="vector-graphics"
             boxSize={'md'}
             src={vg}
-            objectFit={'contain'}
+            objectFit="contain"
           />
         </Stack>
       </div>
 
-      <Box padding={'8'} bg={'blackAlpha.800'}>
+      <Box padding={'8'} bg="blackAlpha.800">
         <Heading
-          children="OUR BRANDS"
           textAlign={'center'}
-          fontFamily={'body'}
+          fontFamily="body"
           color={'yellow.400'}
+          children="OUR BRANDS"
         />
         <HStack
           className="brandsBanner"
           justifyContent={'space-evenly'}
-          marginTop={'4'}
+          marginTop="4"
         >
           <CgGoogle />
           <CgYoutube />
@@ -75,14 +75,15 @@ const Home = () => {
           <DiAws />
         </HStack>
       </Box>
+
       <div className="container2">
         <video
-          src={introVideo}
           controls
           controlsList="nodownload nofullscreen noremoteplayback"
           disablePictureInPicture
           disableRemotePlayback
-        ></video>{' '}
+          src={introVideo}
+        ></video>
       </div>
     </section>
   );

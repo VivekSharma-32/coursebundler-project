@@ -1,20 +1,19 @@
 import { Button, Container, Heading, Input, VStack } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { resetPassword } from '../../redux/Actions/profile';
-import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { resetPassword } from '../../redux/actions/profile';
 
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
-  const params = useParams();
-  console.log(params.token);
 
+  const params = useParams();
   const navigate = useNavigate();
 
   const { loading, message, error } = useSelector(state => state.profile);
-  const dispatch = useDispatch();
 
+  const dispatch = useDispatch();
   const submitHandler = e => {
     e.preventDefault();
     dispatch(resetPassword(params.token, password));
@@ -31,29 +30,32 @@ const ResetPassword = () => {
       navigate('/login');
     }
   }, [dispatch, error, message]);
+
   return (
-    <Container padding={'16'} h={'90vh'}>
+    <Container py={'16'} h="90vh">
       <form onSubmit={submitHandler}>
         <Heading
           children="Reset Password"
-          my={'16'}
+          my="16"
           textTransform={'uppercase'}
           textAlign={['center', 'left']}
         />
+
         <VStack spacing={'8'}>
           <Input
-            type="password"
+            required
             value={password}
             onChange={e => setPassword(e.target.value)}
-            placeholder="New password"
-            required
+            placeholder="New Password"
+            type={'password'}
             focusBorderColor="yellow.500"
           />
+
           <Button
             isLoading={loading}
             type="submit"
-            width={'full'}
-            colorScheme={'yellow'}
+            w={'full'}
+            colorScheme="yellow"
           >
             Reset Password
           </Button>

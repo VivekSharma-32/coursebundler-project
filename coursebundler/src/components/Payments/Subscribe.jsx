@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
   Button,
@@ -9,8 +7,11 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import axios from 'axios';
+import React, { useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { buySubscription } from '../../redux/actions/user';
 import { server } from '../../redux/store';
-import { buySubscription } from '../../redux/Actions/user';
 import toast from 'react-hot-toast';
 import logo from '../../assets/images/logo.png';
 
@@ -79,43 +80,47 @@ const Subscribe = ({ user }) => {
   ]);
 
   return (
-    <Container height={'90vh'} p={'16'}>
-      <Heading children="Welcome" my={'8'} textAlign={'center'} />
+    <Container h="90vh" p="16">
+      <Heading children="Welcome" my="8" textAlign={'center'} />
+
       <VStack
         boxShadow={'lg'}
-        alignItems={'stretch'}
+        alignItems="stretch"
         borderRadius={'lg'}
-        spacing={'0'}
+        spacing="0"
       >
-        <Box bg={'yellow.400'} p={'4'} css={{ borderRadius: '8px 8px 0 0' }}>
-          <Text children="Pro Pack - Rs 299.00" color={'black'} />
+        <Box bg="yellow.400" p={'4'} css={{ borderRadius: '8px 8px 0 0' }}>
+          <Text color={'black'} children={`Pro Pack - ₹299.00`} />
         </Box>
-        <Box p={'4'}>
-          <VStack textAlign={'center'} px={'8'} mt={'4'} spacing={'8'}>
-            <Text children="Join pro pack and get access to all content" />
-            <Heading size={'md'} children={'Rs. 299 Only'} />
+        <Box p="4">
+          <VStack textAlign={'center'} px="8" mt={'4'} spacing="8">
+            <Text children={`Join pro pack and get access to all content.`} />
+            <Heading size="md" children={'₹299 Only'} />
           </VStack>
+
           <Button
-            my={'8'}
-            width={'full'}
-            colorScheme="yellow"
+            my="8"
+            w="full"
+            colorScheme={'yellow'}
             onClick={subscribeHandler}
             isLoading={loading}
           >
             Buy Now
           </Button>
         </Box>
-        <Box bg={'blackAlpha.600'} p={'4'} css={'0 0 8px 8px'}>
+
+        <Box bg="blackAlpha.600" p="4" css={{ borderRadius: '0 0 8px 8px' }}>
           <Heading
             color={'white'}
-            textTransform={'uppercase'}
-            size={'sm'}
-            children="100% refund at cancellation"
+            textTransform="uppercase"
+            size="sm"
+            children={'100% refund at cancellation'}
           />
+
           <Text
             fontSize={'xs'}
-            color={'white'}
-            children="Terms and Conditions Apply"
+            color="white"
+            children={'*Terms & Conditions Apply'}
           />
         </Box>
       </VStack>

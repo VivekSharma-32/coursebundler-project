@@ -62,18 +62,6 @@ export const userReducer = createReducer(
       state.error = action.payload;
     },
 
-    removeFromPlaylistRequest: state => {
-      state.loading = true;
-    },
-    removeFromPlaylistSuccess: (state, action) => {
-      state.loading = false;
-      state.message = action.payload;
-    },
-    removeFromPlaylistFail: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-
     clearError: state => {
       state.error = null;
     },
@@ -146,6 +134,18 @@ export const profileReducer = createReducer(
       state.error = action.payload;
     },
 
+    removeFromPlaylistRequest: state => {
+      state.loading = true;
+    },
+    removeFromPlaylistSuccess: (state, action) => {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    removeFromPlaylistFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
     clearError: state => {
       state.error = null;
     },
@@ -166,6 +166,18 @@ export const subscriptionReducer = createReducer(
       state.subscriptionId = action.payload;
     },
     buySubscriptionFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    cancelSubscriptionRequest: state => {
+      state.loading = true;
+    },
+    cancelSubscriptionSuccess: (state, action) => {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    cancelSubscriptionFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },

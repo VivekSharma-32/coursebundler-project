@@ -13,8 +13,9 @@ export const updateProfile = (name, email) => async dispatch => {
       },
       {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-type': 'application/json',
         },
+
         withCredentials: true,
       }
     );
@@ -28,17 +29,18 @@ export const updateProfile = (name, email) => async dispatch => {
   }
 };
 
-export const updateProfilePicture = formData => async dispatch => {
+export const updateProfilePicture = formdata => async dispatch => {
   try {
     dispatch({ type: 'updateProfilePictureRequest' });
 
     const { data } = await axios.put(
       `${server}/updateprofilepicture`,
-      formData,
+      formdata,
       {
         headers: {
           'Content-type': 'multipart/form-data',
         },
+
         withCredentials: true,
       }
     );
@@ -112,7 +114,6 @@ export const forgetPassword = email => async dispatch => {
 export const resetPassword = (token, password) => async dispatch => {
   try {
     dispatch({ type: 'resetPasswordRequest' });
-
     const config = {
       headers: {
         'Content-type': 'application/json',
@@ -141,6 +142,7 @@ export const resetPassword = (token, password) => async dispatch => {
 export const addToPlaylist = id => async dispatch => {
   try {
     dispatch({ type: 'addToPlaylistRequest' });
+
     const config = {
       headers: {
         'Content-type': 'application/json',
@@ -148,16 +150,16 @@ export const addToPlaylist = id => async dispatch => {
 
       withCredentials: true,
     };
+
     const { data } = await axios.post(
       `${server}/addtoplaylist`,
-      { id },
+      {
+        id,
+      },
       config
     );
 
-    dispatch({
-      type: 'addToPlaylistSuccess',
-      payload: data.message,
-    });
+    dispatch({ type: 'addToPlaylistSuccess', payload: data.message });
   } catch (error) {
     dispatch({
       type: 'addToPlaylistFail',
@@ -169,18 +171,17 @@ export const addToPlaylist = id => async dispatch => {
 export const removeFromPlaylist = id => async dispatch => {
   try {
     dispatch({ type: 'removeFromPlaylistRequest' });
+
     const config = {
       withCredentials: true,
     };
+
     const { data } = await axios.delete(
       `${server}/removefromplaylist?id=${id}`,
       config
     );
 
-    dispatch({
-      type: 'removeFromPlaylistSuccess',
-      payload: data.message,
-    });
+    dispatch({ type: 'removeFromPlaylistSuccess', payload: data.message });
   } catch (error) {
     dispatch({
       type: 'removeFromPlaylistFail',

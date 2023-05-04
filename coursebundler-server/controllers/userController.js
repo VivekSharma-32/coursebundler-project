@@ -1,10 +1,10 @@
-import { catchAsyncError } from "../middlewares/catchAsyncErrors.js";
-import ErrorHandler from "./../utils/ErrorHandler.js";
+import { catchAsyncError } from "../middlewares/catchAsyncError.js";
+import ErrorHandler from "../utils/errorHandler.js";
 import { User } from "../models/User.js";
-import { Course } from "../models/Course.js";
 import { sendToken } from "../utils/sendToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
+import { Course } from "../models/Course.js";
 import cloudinary from "cloudinary";
 import getDataUri from "../utils/dataUri.js";
 import { Stats } from "../models/Stats.js";
@@ -12,19 +12,17 @@ import { Stats } from "../models/Stats.js";
 export const register = catchAsyncError(async (req, res, next) => {
   const { name, email, password } = req.body;
   const file = req.file;
-  if (!name || !email || !password || !file) {
-    return next(new ErrorHandler("Please enter all fields", 400));
-  }
+
+  if (!name || !email || !password || !file)
+    return next(new ErrorHandler("Please enter all field", 400));
 
   let user = await User.findOne({ email });
-  if (user) {
-    return next(new ErrorHandler("User Already Exists", 409));
-  }
+
+  if (user) return next(new ErrorHandler("User Already Exist", 409));
 
   const fileUri = getDataUri(file);
   const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
 
-  // upload file on cloudinary
   user = await User.create({
     name,
     email,
@@ -34,10 +32,10 @@ export const register = catchAsyncError(async (req, res, next) => {
       url: mycloud.secure_url,
     },
   });
+
   sendToken(res, user, "Registered Successfully", 201);
 });
 
-// login controller
 export const login = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -73,6 +71,7 @@ export const logout = catchAsyncError(async (req, res, next) => {
 
 export const getMyProfile = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
+
   res.status(200).json({
     success: true,
     user,
@@ -112,15 +111,15 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-
-    message: "Password Updated Successfully",
+    message: "Profile Updated Successfully",
   });
 });
 
-export const updateProfilePicture = catchAsyncError(async (req, res, next) => {
+export const updateprofilepicture = catchAsyncError(async (req, res, next) => {
+  const file = req.file;
+
   const user = await User.findById(req.user._id);
 
-  const file = req.file;
   const fileUri = getDataUri(file);
   const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
 
@@ -135,7 +134,7 @@ export const updateProfilePicture = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Profile picture updated successfully",
+    message: "Profile Picture Updated Successfully",
   });
 });
 
@@ -144,25 +143,22 @@ export const forgetPassword = catchAsyncError(async (req, res, next) => {
 
   const user = await User.findOne({ email });
 
-  if (!user) {
-    return next(
-      new ErrorHandler("User not found with this email address", 400)
-    );
-  }
+  if (!user) return next(new ErrorHandler("User not found", 400));
 
   const resetToken = await user.getResetToken();
 
   await user.save();
 
-  // send token via email
   const url = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
 
-  const message = `Click on the link to reset your password. ${url}. If you have not requested then please ignore.`;
-  await sendEmail(user.email, "Coursebundler Reset Password", message);
+  const message = `Click on the link to reset your password. ${url}. If you have not request then please ignore.`;
+
+  // Send token via email
+  await sendEmail(user.email, "CourseBundler Reset Password", message);
 
   res.status(200).json({
     success: true,
-    message: `Reset token has been send to ${user.email}`,
+    message: `Reset Token has been sent to ${user.email}`,
   });
 });
 
@@ -180,38 +176,34 @@ export const resetPassword = catchAsyncError(async (req, res, next) => {
       $gt: Date.now(),
     },
   });
+
   if (!user)
-    return next(new ErrorHandler("Token is invalid or has been expired", 400));
+    return next(new ErrorHandler("Token is invalid or has been expired", 401));
 
   user.password = req.body.password;
-
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;
 
-  user.save();
+  await user.save();
 
   res.status(200).json({
     success: true,
     message: "Password Changed Successfully",
-    token,
   });
 });
 
-// Add to playlist
 export const addToPlaylist = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
 
   const course = await Course.findById(req.body.id);
 
-  if (!course) return next(new ErrorHandler("Invalid course id", 404));
+  if (!course) return next(new ErrorHandler("Invalid Course Id", 404));
 
   const itemExist = user.playlist.find((item) => {
-    if (item.course.toString() === course._id.toString()) {
-      return true;
-    }
+    if (item.course.toString() === course._id.toString()) return true;
   });
 
-  if (itemExist) return next(new ErrorHandler("Item already exist", 409));
+  if (itemExist) return next(new ErrorHandler("Item Already Exist", 409));
 
   user.playlist.push({
     course: course._id,
@@ -219,34 +211,32 @@ export const addToPlaylist = catchAsyncError(async (req, res, next) => {
   });
 
   await user.save();
+
   res.status(200).json({
     success: true,
     message: "Added to playlist",
   });
 });
 
-// Remove from playlist
 export const removeFromPlaylist = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
   const course = await Course.findById(req.query.id);
-  if (!course) return next(new ErrorHandler("Invalid course id", 404));
+  if (!course) return next(new ErrorHandler("Invalid Course Id", 404));
 
   const newPlaylist = user.playlist.filter((item) => {
-    if (item.course.toString() !== course._id.toString()) {
-      return item;
-    }
+    if (item.course.toString() !== course._id.toString()) return item;
   });
 
   user.playlist = newPlaylist;
   await user.save();
   res.status(200).json({
     success: true,
-    message: "Removed from playlist",
+    message: "Removed From Playlist",
   });
 });
 
-// Admin controllers
-// GET All Users
+// Admin Controllers
+
 export const getAllUsers = catchAsyncError(async (req, res, next) => {
   const users = await User.find({});
 
@@ -259,33 +249,27 @@ export const getAllUsers = catchAsyncError(async (req, res, next) => {
 export const updateUserRole = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.params.id);
 
-  if (!user) {
-    return next(new ErrorHandler("User not found", 404));
-  }
+  if (!user) return next(new ErrorHandler("User not found", 404));
 
-  if (user.role === "user") {
-    user.role = "admin";
-  } else {
-    user.role = "user";
-  }
+  if (user.role === "user") user.role = "admin";
+  else user.role = "user";
 
   await user.save();
+
   res.status(200).json({
     success: true,
-    message: "Role updated",
+    message: "Role Updated",
   });
 });
 
 export const deleteUser = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.params.id);
 
-  if (!user) {
-    return next(new ErrorHandler("User not found", 404));
-  }
+  if (!user) return next(new ErrorHandler("User not found", 404));
 
   await cloudinary.v2.uploader.destroy(user.avatar.public_id);
 
-  // cancel subscription
+  // Cancel Subscription
 
   await user.remove();
 
@@ -300,6 +284,8 @@ export const deleteMyProfile = catchAsyncError(async (req, res, next) => {
 
   await cloudinary.v2.uploader.destroy(user.avatar.public_id);
 
+  // Cancel Subscription
+
   await user.remove();
 
   res
@@ -309,7 +295,7 @@ export const deleteMyProfile = catchAsyncError(async (req, res, next) => {
     })
     .json({
       success: true,
-      message: "Profile Deleted Successfully",
+      message: "User Deleted Successfully",
     });
 });
 

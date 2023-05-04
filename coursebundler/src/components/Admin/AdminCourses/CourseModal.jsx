@@ -15,7 +15,8 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React from 'react';
+import { useState } from 'react';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { fileUploadCss } from '../../Auth/Register';
 
@@ -26,19 +27,22 @@ const CourseModal = ({
   deleteButtonHandler,
   addLectureHandler,
   courseTitle,
-  lectures = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  lectures = [],
+  loading,
 }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [video, setVideo] = useState('');
-  const [videoPreview, setVideoPreview] = useState('');
+  const [videoPrev, setVideoPrev] = useState('');
 
   const changeVideoHandler = e => {
     const file = e.target.files[0];
     const reader = new FileReader();
+
     reader.readAsDataURL(file);
+
     reader.onloadend = () => {
-      setVideoPreview(reader.result);
+      setVideoPrev(reader.result);
       setVideo(file);
     };
   };
@@ -47,101 +51,112 @@ const CourseModal = ({
     setTitle('');
     setDescription('');
     setVideo('');
-    setVideoPreview('');
+    setVideoPrev('');
     onClose();
   };
   return (
     <Modal
       isOpen={isOpen}
-      size={'full'}
+      size="full"
       onClose={handleClose}
       scrollBehavior="outside"
     >
-      <ModalOverlay>
-        <ModalContent>
-          <ModalHeader>{courseTitle}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody p={'16'}>
-            <Grid templateColumns={['1fr', '3fr 1fr']}>
-              <Box px={['0', '16']}>
-                <Box my={'5'}>
-                  <Heading children={courseTitle} />
-                  <Heading children={`#${id}`} size={'sm'} opacity={'0.4'} />
-                </Box>
-                <Heading children="Lectures" size="lg" />
-                {lectures.map((item, i) => (
-                  <VideoCard
-                    key={i}
-                    title="React Intro"
-                    description="This is our intro lecture where you will know the basics of react"
-                    num={i + 1}
-                    lectureId="sdjkaslacturedkdssa"
-                    courseId={id}
-                    deleteButtonHandler={deleteButtonHandler}
+      <ModalOverlay />
+
+      <ModalContent>
+        <ModalHeader>{courseTitle}</ModalHeader>
+        <ModalCloseButton />
+
+        <ModalBody p="16">
+          <Grid templateColumns={['1fr', '3fr 1fr']}>
+            <Box px={['0', '16']}>
+              <Box my="5">
+                <Heading children={courseTitle} />
+                <Heading children={`#${id}`} size="sm" opacity={0.4} />
+              </Box>
+
+              <Heading children={'Lectures'} size="lg" />
+
+              {lectures.map((item, i) => (
+                <VideoCard
+                  key={i}
+                  title={item.title}
+                  description={item.description}
+                  num={i + 1}
+                  lectureId={item._id}
+                  courseId={id}
+                  deleteButtonHandler={deleteButtonHandler}
+                  loading={loading}
+                />
+              ))}
+            </Box>
+
+            <Box>
+              <form
+                onSubmit={e =>
+                  addLectureHandler(e, id, title, description, video)
+                }
+              >
+                <VStack spacing={'4'}>
+                  <Heading
+                    children="Add Lecture"
+                    size={'md'}
+                    textTransform="uppercase"
                   />
-                ))}
-              </Box>
-              <Box>
-                <form
-                  onSubmit={e =>
-                    addLectureHandler(e, id, title, description, video)
-                  }
-                >
-                  <VStack spacing={'4'}>
-                    <Heading
-                      children="Add Lectures"
-                      size={'md'}
-                      textTransform={'uppercase'}
-                    />
-                    <Input
-                      focusBorderColor="purple.300"
-                      placeholder="Title"
-                      value={title}
-                      onChange={e => setTitle(e.target.value)}
-                    />
 
-                    <Input
-                      focusBorderColor="purple.300"
-                      placeholder="Description"
-                      value={description}
-                      onChange={e => setDescription(e.target.value)}
-                    />
+                  <Input
+                    focusBorderColor="purple.300"
+                    placeholder="Title"
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                  />
+                  <Input
+                    focusBorderColor="purple.300"
+                    placeholder="Description"
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                  />
 
-                    <Input
-                      accept="video/mp4"
-                      type="file"
-                      placeholder="Enter your password"
-                      required
-                      focusBorderColor="purple.300"
-                      css={{
-                        '&::file-selector-button': {
-                          ...fileUploadCss,
-                          color: 'purple',
-                        },
-                      }}
-                      onChange={changeVideoHandler}
-                    />
-                    {videoPreview && (
-                      <video
-                        controlsList={'nodownload'}
-                        controls
-                        src={videoPreview}
-                      ></video>
-                    )}
-                    <Button w={'full'} colorScheme="purple" type="submit">
-                      {' '}
-                      Upload
-                    </Button>
-                  </VStack>
-                </form>
-              </Box>
-            </Grid>
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={handleClose}>Close</Button>
-          </ModalFooter>
-        </ModalContent>
-      </ModalOverlay>
+                  <Input
+                    accept="video/mp4"
+                    required
+                    type={'file'}
+                    focusBorderColor="purple.300"
+                    css={{
+                      '&::file-selector-button': {
+                        ...fileUploadCss,
+                        color: 'purple',
+                      },
+                    }}
+                    onChange={changeVideoHandler}
+                  />
+
+                  {videoPrev && (
+                    <video
+                      controlsList="nodownload"
+                      controls
+                      src={videoPrev}
+                    ></video>
+                  )}
+
+                  <Button
+                    isLoading={loading}
+                    w="full"
+                    colorScheme={'purple'}
+                    type="submit"
+                  >
+                    Upload
+                  </Button>
+                </VStack>
+              </form>
+            </Box>
+          </Grid>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button onClick={handleClose}>Close</Button>
+        </ModalFooter>
+      </ModalContent>
     </Modal>
   );
 };
@@ -155,11 +170,12 @@ function VideoCard({
   lectureId,
   courseId,
   deleteButtonHandler,
+  loading,
 }) {
   return (
     <Stack
       direction={['column', 'row']}
-      my={'8'}
+      my="8"
       borderRadius={'lg'}
       boxShadow={'0 0 10px rgba(107,70,193,0.5)'}
       justifyContent={['flex-start', 'space-between']}
@@ -169,7 +185,9 @@ function VideoCard({
         <Heading size={'sm'} children={`#${num} ${title}`} />
         <Text children={description} />
       </Box>
+
       <Button
+        isLoading={loading}
         color={'purple.600'}
         onClick={() => deleteButtonHandler(courseId, lectureId)}
       >
